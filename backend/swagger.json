@@ -1,0 +1,75 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "EECO Mobility Test API",
+    "description": "API for fetching battery temperature data and triggering frontend test actions.",
+    "version": "1.0.0"
+  },
+  "host": "localhost:5000",
+  "basePath": "/",
+  "schemes": ["http"],
+  "paths": {
+    "/api/temp": {
+      "get": {
+        "summary": "Get Current Temperature",
+        "description": "Returns the current temperature most recently sent by the PyQt frontend.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Successful temperature fetch",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "temperature": {
+                  "type": "integer",
+                  "example": 25
+                },
+                "unit": {
+                  "type": "string",
+                  "example": "Celsius"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No temperature received yet",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "No temperature received yet"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/start_test": {
+      "get": {
+        "summary": "Trigger Start Test on Frontend",
+        "description": "Sends a SocketIO signal to update the Start Test label to 1 on the frontend.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Signal successfully sent",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Start test signal sent"
+                },
+                "start": {
+                  "type": "integer",
+                  "example": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
