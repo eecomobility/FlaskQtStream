@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "EECO Mobility Test API",
-    "description": "API for fetching battery temperature data and triggering frontend test actions.",
+    "description": "API for fetching battery temperature data and initiating tests with real-time GUI integration.",
     "version": "1.0.0"
   },
   "host": "localhost:5000",
@@ -46,27 +46,69 @@
         }
       }
     },
-    "/api/start_test": {
-      "get": {
-        "summary": "Trigger Start Test on Frontend",
-        "description": "Sends a SocketIO signal to update the Start Test label to 1 on the frontend.",
+    "/test": {
+      "put": {
+        "summary": "Initiate Test",
+        "description": "Initiates a battery test. Requires batteryId and batteryRefDate as query params and callback URLs in the request body.",
+        "parameters": [
+          {
+            "name": "batteryId",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Unique ID for the battery (e.g. barcode)."
+          },
+          {
+            "name": "batteryRefDate",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Battery reference date (YYYY-MM-DD or YYYY-MM-DD HH:MM:SS)"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "testDoneCallbackURL": {
+                  "type": "string",
+                  "example": "http://localhost:5000/callback/test_done"
+                },
+                "analysisDoneCallbackURL": {
+                  "type": "string",
+                  "example": "http://localhost:5000/callback/analysis_done"
+                }
+              },
+              "required": ["testDoneCallbackURL", "analysisDoneCallbackURL"]
+            }
+          }
+        ],
         "produces": ["application/json"],
         "responses": {
           "200": {
-            "description": "Signal successfully sent",
+            "description": "Test signal sent and acknowledged",
             "schema": {
               "type": "object",
               "properties": {
                 "status": {
                   "type": "string",
-                  "example": "Start test signal sent"
+                  "example": "Test start signal sent"
                 },
-                "start": {
-                  "type": "integer",
-                  "example": 1
+                "batteryId": {
+                  "type": "string",
+                  "example": "BATT123"
+                },
+                "batteryRefDate": {
+                  "type": "string",
+                  "example": "2024-01-01 00:00:00"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Missing required fields"
           }
         }
       }
